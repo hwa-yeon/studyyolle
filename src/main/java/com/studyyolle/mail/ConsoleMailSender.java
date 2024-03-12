@@ -1,4 +1,4 @@
-package com.studyyolle;
+package com.studyyolle.mail;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
