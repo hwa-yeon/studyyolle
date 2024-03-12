@@ -1,6 +1,8 @@
 package com.studyyolle.account;
 
 import com.studyyolle.domain.Account;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,18 +37,23 @@ public class AccountController {
 
     @PostMapping("/sign-up")
     public String signUpSubmit(@Validated @ModelAttribute SignUpForm signUpForm,
-                               Errors errors) {
+                               Errors errors,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
         if(errors.hasErrors()) {
             return "account/sign-up";
         }
 
-        accountService.processNewAccount(signUpForm);
+        Account account = accountService.processNewAccount(signUpForm);
+        accountService.login(account, request, response);
 
         return "redirect:/";
     }
 
     @GetMapping("/check-email-token")
-    public String checkEmailToken(String token, String email, Model model) {
+    public String checkEmailToken(String token, String email, Model model,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
         Account account = accountRepository.findByEmail(email);
         if(account == null) {
             model.addAttribute("error", "wrong.email");
@@ -58,6 +65,7 @@ public class AccountController {
         }
 
         account.completeSignUp();
+        accountService.login(account, request, response);
         model.addAttribute("numberOfUser", accountRepository.count());
         model.addAttribute("nickname", account.getNickname());
         return "account/checked-email";
