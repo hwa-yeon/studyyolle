@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+    id "com.github.node-gradle.node" version "3.5.0"
 }
 
 group = 'com.studyyolle'
@@ -19,6 +20,21 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+node {
+    download = true
+    version = "20.11.1"
+    npmVersion = "10.2.4"
+    //yarnVersion = ""
+    distBaseUrl = "https://nodejs.org/dist"
+    allowInsecureProtocol = null
+    npmInstallCommand = "install"
+    workDir = file("${project.projectDir}/.gradle/nodejs")
+    npmWorkDir = file("${project.projectDir}/.gradle/npm")
+    //yarnWorkDir = file("${project.projectDir}/.gradle/yarn")
+    nodeProjectDir = file("${project.projectDir}/src/main/resources/static")
+    nodeProxySettings = ProxySettings.SMART
 }
 
 dependencies {
@@ -42,3 +58,5 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+processResources.dependsOn("npmInstall")
