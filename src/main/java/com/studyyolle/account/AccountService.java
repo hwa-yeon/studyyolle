@@ -16,6 +16,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +32,6 @@ public class AccountService {
 
     @Transactional
     public Account processNewAccount(SignUpForm signUpForm) {
-
         Account newAccount = saveNewAccount(signUpForm);
         newAccount.generateEmailCheckToken();
         sendSignUpConfirmEmail(newAccount);
@@ -39,7 +39,7 @@ public class AccountService {
         return newAccount;
     }
 
-    private Account saveNewAccount(SignUpForm signUpForm) {
+    public Account saveNewAccount(SignUpForm signUpForm) {
         Account account = Account.builder()
                 .email(signUpForm.getEmail())
                 .nickname(signUpForm.getNickname())
@@ -52,7 +52,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    private void sendSignUpConfirmEmail(Account newAccount) {
+    public void sendSignUpConfirmEmail(Account newAccount) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(newAccount.getEmail());
         simpleMailMessage.setSubject("스터디올래, 회원가입 인증");
@@ -70,5 +70,10 @@ public class AccountService {
         context.setAuthentication(token);
         securityContextHolderStrategy.setContext(context);
         securityContextRepository.saveContext(context, request, response);
+    }
+
+    public void completeSignUp(Account account, HttpServletRequest request, HttpServletResponse response) {
+        account.completeSignUp();
+        login(account, request, response);
     }
 }
