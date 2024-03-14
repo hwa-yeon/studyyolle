@@ -19,13 +19,23 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .requestMatchers("/", "/login", "/sign-up", "/check-email-token",
-                        "/email-login", "/check-email-login", "/login-link")
-                .permitAll()
-                .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
-                .requestMatchers("/css/**, /js/**, /images/**").permitAll()
-                .anyRequest().authenticated();
+        http
+                .authorizeHttpRequests((authorizeRequests) ->
+                        authorizeRequests
+                                .requestMatchers("/", "/login", "/sign-up", "/check-email-token",
+                                        "/email-login", "/check-email-login", "/login-link")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
+                                .requestMatchers("/css/**, /js/**, /images/**").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .formLogin((formLogin) ->
+                        formLogin
+                                .loginPage("/login").permitAll()
+                )
+                .logout((logoutConfig) ->
+                        logoutConfig.logoutSuccessUrl("/")
+                );
 
         return http.build();
     }
