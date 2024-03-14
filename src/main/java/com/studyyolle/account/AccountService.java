@@ -63,7 +63,7 @@ public class AccountService {
 
     public void login(Account account, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                account.getNickname(),
+                new UserAccount(account),
                 account.getPassword(),
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContext context = securityContextHolderStrategy.createEmptyContext();
