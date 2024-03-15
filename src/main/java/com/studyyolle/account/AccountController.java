@@ -9,10 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -88,4 +85,16 @@ public class AccountController {
         return "redirect:/";
     }
 
+    @GetMapping("/profile/{nickname}")
+    public String viewProfile(@PathVariable String nickname,
+                              @CurrentAccount Account account,
+                              Model model) {
+        Account byNickname = accountRepository.findByNickname(nickname);
+        if(byNickname == null) {
+            throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
+        }
+        model.addAttribute("account", byNickname);
+        model.addAttribute("isOwner", byNickname.equals(account));
+        return  "account/profile";
+    }
 }
