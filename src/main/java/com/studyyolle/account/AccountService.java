@@ -79,6 +79,15 @@ public class AccountService implements UserDetailsService {
         login(account, request, response);
     }
 
+    public void updateProfile(Account account, Profile profile) {
+        account.setUrl(profile.getUrl());
+        account.setBio(profile.getBio());
+        account.setOccupation(profile.getOccupation());
+        account.setLocation(profile.getLocation());
+        // TODO 프로필 이미지
+        accountRepository.save(account);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
