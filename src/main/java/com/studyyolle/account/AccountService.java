@@ -1,17 +1,19 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.Notifications;
+import com.studyyolle.account.form.Profile;
+import com.studyyolle.account.form.SignUpForm;
 import com.studyyolle.domain.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,12 +22,11 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
@@ -33,8 +34,8 @@ public class AccountService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final SecurityContextHolderStrategy securityContextHolderStrategy;
     private final SecurityContextRepository securityContextRepository;
+    private final ModelMapper modelMapper;
 
-    @Transactional
     public Account processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
         newAccount.generateEmailCheckToken();
@@ -50,7 +51,7 @@ public class AccountService implements UserDetailsService {
                 .password(passwordEncoder.encode(signUpForm.getPassword()))
                 .studyCreatedByWeb(true)
                 .studyUpdatedByWeb(true)
-                .studyEnrollResultByWeb(true)
+                .studyEnrollmentResultByWeb(true)
                 .build();
 
         return accountRepository.save(account);
@@ -81,6 +82,38 @@ public class AccountService implements UserDetailsService {
         login(account, request, response);
     }
 
+    public void updateProfile(Account account, Profile profile) {
+        modelMapper.map(profile, account);
+        accountRepository.save(account);
+    }
+
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        modelMapper.map(notifications, account);
+        accountRepository.save(account);
+    }
+
+    public void updateNickname(Account account, String nickname, HttpServletRequest request, HttpServletResponse response) {
+        account.setNickname(nickname);
+        accountRepository.save(account);
+        login(account, request, response);
+    }
+
+    public void sendLoginLink(Account account) {
+        account.generateEmailCheckToken();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(account.getEmail());
+        mailMessage.setSubject("스터디올래, 로그인 링크");
+        mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() +
+                "&email=" + account.getEmail());
+        javaMailSender.send(mailMessage);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(username);
