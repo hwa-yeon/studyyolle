@@ -1,5 +1,7 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.Profile;
+import com.studyyolle.account.form.SignUpForm;
 import com.studyyolle.domain.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,9 +20,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,5 +1,7 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.SignUpForm;
+import com.studyyolle.account.validator.SignUpFormValidator;
 import com.studyyolle.domain.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,8 +12,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor

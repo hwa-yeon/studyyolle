@@ -1,5 +1,6 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.SignUpForm;
 import com.studyyolle.domain.Account;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

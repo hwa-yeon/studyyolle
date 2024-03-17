@@ -1,6 +1,8 @@
 package com.studyyolle.account;
 
-import com.studyyolle.account.CurrentAccount;
+import com.studyyolle.account.form.PasswordForm;
+import com.studyyolle.account.form.Profile;
+import com.studyyolle.account.validator.PasswordFormValidator;
 import com.studyyolle.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

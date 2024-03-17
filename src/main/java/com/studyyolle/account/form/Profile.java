@@ -1,4 +1,4 @@
-package com.studyyolle.account;
+package com.studyyolle.account.form;
 
 import com.studyyolle.domain.Account;
 import jakarta.persistence.Lob;
