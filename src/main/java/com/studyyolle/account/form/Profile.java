@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Profile {
 
     @Length(max = 35)
@@ -25,11 +25,11 @@ public class Profile {
     @Lob
     private String profileImage;
 
-    public Profile(Account account) {
+/*    public Profile(Account account) {
         this.bio = account.getBio();
         this.url = account.getUrl();
         this.occupation = account.getOccupation();
         this.location = account.getLocation();
         this.profileImage = account.getProfileImage();
-    }
+    }*/
 }

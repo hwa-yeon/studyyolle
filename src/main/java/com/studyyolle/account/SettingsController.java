@@ -6,6 +6,7 @@ import com.studyyolle.account.form.Profile;
 import com.studyyolle.account.validator.PasswordFormValidator;
 import com.studyyolle.domain.Account;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,6 +27,7 @@ public class SettingsController {
     private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
 
     private final AccountService accountService;
+    private final ModelMapper modelMapper;
 
     @InitBinder("passwordForm")
     public void initBinder(WebDataBinder webDataBinder) {
@@ -35,7 +37,7 @@ public class SettingsController {
     @GetMapping("/settings/profile")
     public String updateProfileForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
-        model.addAttribute((new Profile(account)));
+        model.addAttribute(modelMapper.map(account, Profile.class));
         return SETTINGS_PROFILE_VIEW_NAME;
     }
 
@@ -80,7 +82,7 @@ public class SettingsController {
     @GetMapping("/settings/notifications")
     public String updateNotificationsForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
-        model.addAttribute(new Notifications(account));
+        model.addAttribute(modelMapper.map(account, Notifications.class));
         return SETTINGS_NOTIFICATIONS_VIEW_NAME;
     }
 
