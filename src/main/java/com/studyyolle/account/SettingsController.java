@@ -1,5 +1,6 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.Notifications;
 import com.studyyolle.account.form.PasswordForm;
 import com.studyyolle.account.form.Profile;
 import com.studyyolle.account.validator.PasswordFormValidator;
@@ -22,6 +23,7 @@ public class SettingsController {
 
     private static final String SETTINGS_PROFILE_VIEW_NAME = "settings/profile";
     private static final String SETTINGS_PASSWORD_VIEW_NAME = "settings/password";
+    private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
 
     private final AccountService accountService;
 
@@ -73,5 +75,27 @@ public class SettingsController {
         accountService.updatePassword(account, passwordForm.getNewPassword());
         redirectAttributes.addFlashAttribute("message", "패스워드를 변경했습니다.");
         return "redirect:/" + SETTINGS_PASSWORD_VIEW_NAME;
+    }
+
+    @GetMapping("/settings/notifications")
+    public String updateNotificationsForm(@CurrentAccount Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(new Notifications(account));
+        return SETTINGS_NOTIFICATIONS_VIEW_NAME;
+    }
+
+    @PostMapping("/settings/notifications")
+    public String updateNotifications(@CurrentAccount Account account,
+                                      @Validated Notifications notifications,
+                                      Errors errors,
+                                      Model model,
+                                      RedirectAttributes redirectAttributes) {
+        if(errors.hasErrors()) {
+            model.addAttribute(account);
+            return SETTINGS_NOTIFICATIONS_VIEW_NAME;
+        }
+        accountService.updateNotifications(account, notifications);
+        redirectAttributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
+        return "redirect:/" + SETTINGS_NOTIFICATIONS_VIEW_NAME;
     }
 }

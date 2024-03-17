@@ -1,5 +1,6 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.Notifications;
 import com.studyyolle.account.form.Profile;
 import com.studyyolle.account.form.SignUpForm;
 import com.studyyolle.domain.Account;
@@ -90,6 +91,16 @@ public class AccountService implements UserDetailsService {
 
     public void updatePassword(Account account, String newPassword) {
         account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        account.setStudyCreatedByWeb(notifications.isStudyCreatedByWeb());
+        account.setStudyCreatedByEmail(notifications.isStudyCreatedByEmail());
+        account.setStudyUpdatedByWeb(notifications.isStudyUpdatedByWeb());
+        account.setStudyUpdatedByEmail(notifications.isStudyUpdatedByEmail());
+        account.setStudyEnrollResultByWeb(notifications.isStudyEnrollmentResultByWeb());
+        account.setStudyEnrollResultByEmail(notifications.isStudyEnrollmentResultByEmail());
         accountRepository.save(account);
     }
 
