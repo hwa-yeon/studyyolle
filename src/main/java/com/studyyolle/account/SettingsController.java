@@ -1,10 +1,14 @@
 package com.studyyolle.account;
 
+import com.studyyolle.account.form.NicknameForm;
 import com.studyyolle.account.form.Notifications;
 import com.studyyolle.account.form.PasswordForm;
 import com.studyyolle.account.form.Profile;
+import com.studyyolle.account.validator.NicknameValidator;
 import com.studyyolle.account.validator.PasswordFormValidator;
 import com.studyyolle.domain.Account;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
@@ -25,13 +29,20 @@ public class SettingsController {
     private static final String SETTINGS_PROFILE_VIEW_NAME = "settings/profile";
     private static final String SETTINGS_PASSWORD_VIEW_NAME = "settings/password";
     private static final String SETTINGS_NOTIFICATIONS_VIEW_NAME = "settings/notifications";
+    private static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
 
+    private final NicknameValidator nicknameValidator;
     private final AccountService accountService;
     private final ModelMapper modelMapper;
 
     @InitBinder("passwordForm")
-    public void initBinder(WebDataBinder webDataBinder) {
+    public void passwordFormInitBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new PasswordFormValidator());
+    }
+
+    @InitBinder("nicknameForm")
+    public void nicknameFormInitBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(nicknameValidator);
     }
 
     @GetMapping("/settings/profile")
@@ -99,5 +110,29 @@ public class SettingsController {
         accountService.updateNotifications(account, notifications);
         redirectAttributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
         return "redirect:/" + SETTINGS_NOTIFICATIONS_VIEW_NAME;
+    }
+
+    @GetMapping("/settings/account")
+    public String updateAccountForm(@CurrentAccount Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(modelMapper.map(account, NicknameForm.class));
+        return SETTINGS_ACCOUNT_VIEW_NAME;
+    }
+
+    @PostMapping("/settings/account")
+    public String updateAccount(@CurrentAccount Account account,
+                                @Validated NicknameForm nicknameForm,
+                                Errors errors,
+                                Model model,
+                                RedirectAttributes redirectAttributes,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        if(errors.hasErrors()) {
+            model.addAttribute(account);
+            return SETTINGS_ACCOUNT_VIEW_NAME;
+        }
+        accountService.updateNickname(account, nicknameForm.getNickname(), request, response);
+        redirectAttributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+        return "redirect:/" + SETTINGS_ACCOUNT_VIEW_NAME;
     }
 }

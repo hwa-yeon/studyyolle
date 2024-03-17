@@ -97,6 +97,12 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
+    public void updateNickname(Account account, String nickname, HttpServletRequest request, HttpServletResponse response) {
+        account.setNickname(nickname);
+        accountRepository.save(account);
+        login(account, request, response);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
